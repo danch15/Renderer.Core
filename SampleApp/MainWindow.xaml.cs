@@ -54,7 +54,7 @@ namespace SampleApp
                     MessageBox.Show("WriteableBitmapSource不支持该种帧格式：" + FrameFormat.YV12);
                 }
 
-                if (this.d3dSource.SetupSurface(this.yuvData.FrameWidth, this.yuvData.FrameHeight, FrameFormat.NV12))
+                if (this.d3dSource.SetupSurface(this.yuvData.FrameWidth, this.yuvData.FrameHeight, FrameFormat.YV12))
                 {
                     this.imageD3D.Source = this.d3dSource.ImageSource;
                 }
@@ -83,7 +83,6 @@ namespace SampleApp
                     IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(this.yuvData.FrameBuffer, this.frameIndex * this.yuvData.FrameSize);
                     this.wbSource.Render(ptr);
                     this.d3dSource.Render(ptr);
-                    //timer.Enabled = false;
                 }
                 catch
                 {
@@ -107,10 +106,46 @@ namespace SampleApp
         {
             try
             {
-                this.yuvData = FrameData.LoadData2("1280_720_30fps.yuv");
+                this.timer.Stop();
+                frameIndex = 0;
+                int width = 1280, height = 720;
+                this.yuvData = FrameData.LoadData2("1280_720_30fps.yuv", width, height);
 
+                if (this.wbSource.SetupSurface(width, height, FrameFormat.YU12))
+                {
+                    this.imageWB.Source = this.wbSource.ImageSource;
+                }
+                else
+                {
+                    MessageBox.Show("WriteableBitmapSource不支持该种帧格式：" + FrameFormat.YU12);
+                }
 
-                if (this.wbSource.SetupSurface(1280, 720, FrameFormat.YU12))
+                if (this.d3dSource.SetupSurface(width, height, FrameFormat.YU12))
+                {
+                    this.imageD3D.Source = this.d3dSource.ImageSource;
+                }
+                else
+                {
+                    MessageBox.Show("本机显卡不支持该种帧格式：" + FrameFormat.YU12);
+                }
+            }
+            catch
+            {
+                MessageBox.Show("加载数据文件失败");
+            }
+
+            //this.timer.Start();
+        }
+
+        private void buttonStart3_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                this.timer.Stop();
+                frameIndex = 0;
+                this.yuvData = FrameData.LoadData("yv12.dat");
+
+                if (this.wbSource.SetupSurface(this.yuvData.FrameWidth, this.yuvData.FrameHeight, FrameFormat.YV12))
                 {
                     this.imageWB.Source = this.wbSource.ImageSource;
                 }
@@ -119,7 +154,7 @@ namespace SampleApp
                     MessageBox.Show("WriteableBitmapSource不支持该种帧格式：" + FrameFormat.YV12);
                 }
 
-                if (this.d3dSource.SetupSurface(1280, 720, FrameFormat.YU12))
+                if (this.d3dSource.SetupSurface(this.yuvData.FrameWidth, this.yuvData.FrameHeight, FrameFormat.YV12))
                 {
                     this.imageD3D.Source = this.d3dSource.ImageSource;
                 }
@@ -133,8 +168,7 @@ namespace SampleApp
                 MessageBox.Show("加载数据文件失败");
             }
 
-            this.timer.Start();
-
+            //this.timer.Start();
         }
     }
 }

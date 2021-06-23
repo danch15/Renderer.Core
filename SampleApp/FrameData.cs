@@ -161,7 +161,7 @@ namespace SampleApp
             }
         }
 
-        public static FrameData LoadData2(string filePath)
+        public static FrameData LoadData2(string filePath, int width, int height)
         {
             try
             {
@@ -171,15 +171,11 @@ namespace SampleApp
                     {
                         FrameData videoData = new FrameData();
 
-                        videoData.FrameWidth = 1280;
-                        videoData.FrameHeight = 720;
-                        videoData.FrameSize = (int)(1280 * 720 * 1.5);
+                        videoData.FrameWidth = width;
+                        videoData.FrameHeight = height;
+                        videoData.FrameSize = width * height * 3 / 2;
                         videoData.Frames = (int)(fs.Length / videoData.FrameSize);
                         videoData.Type = VideoType.YV12;
-                        //for (int i = 0; i < 59; i++)
-                        //{
-                        //    reader.ReadInt32();
-                        //}
 
                         int bufferLength = videoData.Frames * videoData.FrameSize;
                         if (bufferLength > 0)
@@ -252,140 +248,5 @@ namespace SampleApp
         }
 
         #endregion
-
-        private class RGB
-        {
-            public int r, g, b;
-        }
-
-
-        //public static byte[] YV12ToRGB(byte[] src, int width, int height)
-        //{
-        //    int numOfPixel = width * height;
-        //    int positionOfV = numOfPixel;
-        //    int positionOfU = numOfPixel / 4 + numOfPixel;
-        //    byte[] rgb = new byte[numOfPixel];
-
-        //    for (int i = 0, yp = 0; i < height; i++)
-        //    {
-        //        int startY = i * width;
-        //        int step = (i / 2) * (width / 2);
-        //        int startV = positionOfV + step;
-        //        int startU = positionOfU + step;
-        //        for (int j = 0; j < width; j++, yp++)
-        //        {
-        //            int Y = startY + j;
-        //            int V = startV + j / 2;
-        //            int U = startU + j / 2;
-        //            int index = Y * 3;
-
-        //            //rgb[index+R] = (int)((src[Y]&0xff) + 1.4075 * ((src[V]&0xff)-128));
-        //            //rgb[index+G] = (int)((src[Y]&0xff) - 0.3455 * ((src[U]&0xff)-128) - 0.7169*((src[V]&0xff)-128));
-        //            //rgb[index+B] = (int)((src[Y]&0xff) + 1.779 * ((src[U]&0xff)-128));
-
-        //            RGB tmp = yuvTorgb(src[Y], src[U], src[V]);
-        //            //tmp = YUVtoRGB(src[Y], src[U], src[V]);
-
-        //            //rgb[index + R] = tmp.r;
-        //            //rgb[index + G] = tmp.g;
-        //            //rgb[index + B] = tmp.b;
-        //            var arg = 0xff000000 |
-        //                ((tmp.r /*<< 6*/) & 0xff0000) |
-        //                ((tmp.g /*>> 2*/) & 0xff00) |
-        //                ((tmp.b /*>> 10*/) & 0xff);
-        //            rgb[yp] = (byte)arg;
-        //        }
-        //    }
-        //    return rgb;
-        //}
-
-        //private void Rgb2Yuv(byte[] img, double y, double u, double v, int height, int width)
-        //{
-        //    //  Y= 0.3*R + 0.59*G + 0.11*B
-        //    //  U= (B-Y) * 0.493
-        //    //  V= (R-Y) * 0.877
-        //    byte[] rgb = new byte[height * width];
-        //    double Y = 0.0, U = 0.0, V = 0.0;
-        //    for (int h = 0; h < height; ++h)
-        //    {
-        //        for (int w = 0; w < width; ++w)
-        //        {
-        //            //Y = 0.11 * img.Data[h, w, 0] + 0.59 * img.Data[h, w, 1] + 0.3 * img.Data[h, w, 2];
-        //            //U = (img.Data[h, w, 0] - Y) * 0.493;
-        //            //V = (img.Data[h, w, 2] - Y) * 0.877;
-        //            Y = 0.257 * y + 0.504 * u + 0.098 * v + 16;
-        //            U = 0.148 * y - 0.291 * u + 0.439 * v + 128;
-        //            V = 0.439 * y - 0.368 * u - 0.071 * v + 128;
-        //            yImg.Data[h, w, 0] = Y;
-        //            uImg.Data[h, w, 0] = U;
-        //            vImg.Data[h, w, 0] = V;
-        //        }
-        //    }
-        //}
-
-        //private static RGB YUVtoRGB(double y, double u, double v)
-        //{
-        //    RGB rgb = new RGB();
-
-        //    rgb.r = Convert.ToInt32((y + 1.139837398373983740 * v) * 255);
-        //    rgb.g = Convert.ToInt32((
-        //        y - 0.3946517043589703515 * u - 0.5805986066674976801 * v) * 255);
-        //    rgb.b = Convert.ToInt32((y + 2.032110091743119266 * u) * 255);
-
-        //    return rgb;
-        //}
-
-        //private static RGB yuvTorgb(byte Y, byte U, byte V)
-        //{
-        //    RGB rgb = new RGB();
-        //    rgb.r = (int)((Y & 0xff) + 1.4075 * ((V & 0xff) - 128));
-        //    rgb.g = (int)((Y & 0xff) - 0.3455 * ((U & 0xff) - 128) - 0.7169 * ((V & 0xff) - 128));
-        //    rgb.b = (int)((Y & 0xff) + 1.779 * ((U & 0xff) - 128));
-        //    rgb.r = (rgb.r < 0 ? 0 : rgb.r > 255 ? 255 : rgb.r);
-        //    rgb.g = (rgb.g < 0 ? 0 : rgb.g > 255 ? 255 : rgb.g);
-        //    rgb.b = (rgb.b < 0 ? 0 : rgb.b > 255 ? 255 : rgb.b);
-        //    return rgb;
-        //}
-
-        //public static byte[] decodeYUV420SP(byte[] yuv420sp, int width, int height)
-        //{
-        //    int frameSize = width * height;
-        //    byte[] rgb = new byte[frameSize];
-        //    for (int j = 0, yp = 0; j < height; j++)
-        //    {
-        //        int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
-        //        for (int i = 0; i < width; i++, yp++)
-        //        {
-        //            int y = (0xff & ((int)yuv420sp[yp])) - 16;
-        //            if (y < 0)
-        //                y = 0;
-        //            if ((i & 1) == 0)
-        //            {
-        //                v = (0xff & yuv420sp[uvp++]) - 128;
-        //                u = (0xff & yuv420sp[uvp++]) - 128;
-        //            }
-        //            int y1192 = 1192 * y;
-        //            int r = (y1192 + 1634 * v);
-        //            int g = (y1192 - 833 * v - 400 * u);
-        //            int b = (y1192 + 2066 * u);
-        //            if (r < 0)
-        //                r = 0;
-        //            else if (r > 262143)
-        //                r = 262143;
-        //            if (g < 0)
-        //                g = 0;
-        //            else if (g > 262143)
-        //                g = 262143;
-        //            if (b < 0)
-        //                b = 0;
-        //            else if (b > 262143)
-        //                b = 262143;
-        //            //var arg = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);
-        //            var arg = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);
-        //            rgb[yp] = (byte)arg;
-        //        }
-        //    }
-        //    return rgb;
-        //}
     }
 }
